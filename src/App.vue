@@ -2,6 +2,7 @@
   <img alt="Vue logo" src="./assets/logo.png">
   <HelloWorld msg="Welcome to Your Vue.js App"/>
 </template>
+
 <script>
 import HelloWorld from './components/HelloWorld.vue'
 
@@ -10,13 +11,11 @@ export default {
   components: {
     HelloWorld
   }
+  
 }
 </script>
 
 <style>
-  .aa{
-    font: 100;
-  }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
