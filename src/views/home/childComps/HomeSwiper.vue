@@ -3,7 +3,7 @@
 		<div class="swiper-wrapper">
 			<div :key="i" v-for="(item, i) in banner" class="swiper-slide">
 				<a :href="item.link">
-					<img :src="item.image" alt="" />
+					<img :src="item.image" alt="" @load="swiper_imgload" />
 				</a>
 			</div>
 		</div>
@@ -11,6 +11,7 @@
 	</div>
 </template>
 <script>
+
 import { swiper_5 } from "@/common/swiper";
 export default {
 	name: "honeSwiper",
@@ -23,9 +24,14 @@ export default {
 		},
 	},
 	mounted() {
+		let vm = this
     setTimeout(() => {
       swiper_5(".banner_index", {
 			observer: true,
+			observeParents: true,
+			observeSlideChildren: true,
+			 preloadImages:true,
+			 updateOnImagesReady:true,
 			loop: true,
 			autoplay: {
 				delay: 3000,
@@ -46,14 +52,23 @@ export default {
 				observerUpdate: function () {
         //  console.log("变化了")
 				},
+				imagesReady:function(){
+					 vm.imagesReady()
+				}
 			},
-			observer: true,
-			observeParents: true,
-			observeSlideChildren: true,
+			
 		});
     },100);
 	
 	},
+	methods:{
+		swiper_imgload(){
+			this.$emit("swiper_imgload")
+		},
+		imagesReady(){
+				this.$emit("swiperimg_ready")
+		}
+	}
 };
 </script>
 <style>

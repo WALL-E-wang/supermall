@@ -20,10 +20,8 @@ export default {
   font-size: 0.36rem;
 }
 .nav-bar .left {
-  background: blue;
 }
 .center {
   flex: 1;
-  background: red;
 }
 </style>

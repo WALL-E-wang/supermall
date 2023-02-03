@@ -3,13 +3,27 @@
 		<navbar>
 			<template #center> <div class="home_nav">购物街</div> </template>
 		</navbar>
+		<tabControl
+			id="tabControl1"
+			ref="tabControl_1"
+			@tabclick="tabclick"
+			v-show="isfixd"
+			:class="{ fixd: isfixd }"
+			:titles="['流行', '新款', '精选']"
+		></tabControl>
 		<scroll ref="wrapper" class="content" :probeType="0">
-			<HomeSwiper :banner="banner"></HomeSwiper>
+			<HomeSwiper
+				@swiper_imgload="swiper_imgload"
+				@swiperimg_ready="swiperimg_ready"
+				:banner="banner"
+			></HomeSwiper>
 			<RecommendView :recommends="recommends"></RecommendView>
-			<FeatureView></FeatureView>
+			<FeatureView :class="{ tabControl_show: isfixd }"></FeatureView>
 			<tabControl
+				id="tabControl2"
+				ref="tabControl_2"
 				@tabclick="tabclick"
-				class="tab-control"
+				:class="{ fixd: isfixd }"
 				:titles="['流行', '新款', '精选']"
 			></tabControl>
 			<goods-list :goods="showGoods"></goods-list>
@@ -34,6 +48,8 @@ import TabControl from "@/components/content/tabControl/tabControl.vue";
 import scroll from "@/components/common/scroll/Scroll.vue";
 import BackTop from "@/components/common/backTop/backTop.vue";
 
+import { debounce } from "@/common/utils";
+
 import { getHomeMultidata, getHomeGoos } from "@/network/home";
 import GoodsList from "@/components/content/goos/GoodsList.vue";
 export default {
@@ -44,35 +60,30 @@ export default {
 			recommends: [],
 			goods: {
 				pop: { page: 0, list: [] },
-				new: { page: 0, list: [] },
+				new: { page:0, list: [] },
 				sell: { page: 0, list: [] },
 			},
 			currentType: "pop",
 			bs: null,
 			backtop_show: false,
+			taboffsettop: 0,
+			taboffsetfunc: Function,
+			isfixd: false,
 		};
 	},
+	unmounted() {
+		console.log("销毁了");
+	},
 	mounted() {
-		this.bs = this.$refs.wrapper.bs;
-		this.bs.on("pullingUp", () => {
-			console.log("上拉执行刷新2");
-			
-		 this.getHomeGoos(this.currentType)
-		});
-		this.bs.on("scroll", (position) => {
-			if (position.y < -500) {
-				this.backtop_show = true;
-			} else {
-				this.backtop_show = false;
-			}
-		});
+		//初始化better-scroll
+		this.initBscroll();
+		this.taboffsetfunc = debounce(this.change_off, 200);
 	},
 	created() {
 		this.getHomeMultidata();
 		this.getHomeGoos("pop");
 		this.getHomeGoos("new");
 		this.getHomeGoos("sell");
-		
 	},
 	computed: {
 		showGoods() {
@@ -81,6 +92,7 @@ export default {
 	},
 	methods: {
 		/* 事件监听*/
+
 		tabclick(index) {
 			// switch (index) {
 			// 	case 0:
@@ -97,6 +109,18 @@ export default {
 			// 		break;
 			// }
 			this.currentType = Object.keys(this.goods)[index];
+			this.$refs.tabControl_1.currentIndex = index;
+			this.$refs.tabControl_2.currentIndex = index;
+		},
+		swiper_imgload() {
+			this.taboffsetfunc();
+		},
+		swiperimg_ready() {
+			// this.taboffsettop = this.$refs.tabControl.$el.offsetTop;
+			// console.log(this.taboffsettop);
+		},
+		change_off() {
+			this.taboffsettop = this.$refs.tabControl_2.$el.offsetTop;
 		},
 		// backtop(){
 		// 		this.$refs.wrapper.bs.scrollTo(0,0,300)
@@ -127,7 +151,28 @@ export default {
 				this.bs.finishPullUp();
 			});
 		},
+
+		/* scroll插件的调用*/
+		initBscroll() {
+			this.bs = this.$refs.wrapper.bs;
+			this.bs.on("pullingUp", () => {
+				console.log("上拉执行刷新2");
+				this.getHomeGoos(this.currentType);
+			});
+
+			this.bs.on("pullingDown", () => {
+				console.log("下拉执行刷新2");
+				this.bs.finishPullDown();
+				//这插件自带一个minScrollY=40，拉完了手动回到顶部
+				this.bs.scrollTo(0, 0, 300);
+			});
+			this.bs.on("scroll", (position) => {
+				this.backtop_show = position.y < -564;
+				this.isfixd = position.y < -this.taboffsettop;
+			});
+		},
 	},
+	beforeUpdate() {},
 	components: {
 		HomeSwiper,
 		RecommendView,
@@ -164,5 +209,15 @@ export default {
 	position: relative;
 	height: calc(100vh - 1.94rem);
 	overflow: hidden;
+}
+.fixd {
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0.98rem;
+	z-index: 9;
+}
+.tabControl_show {
+	margin-bottom: 0.8rem;
 }
 </style>

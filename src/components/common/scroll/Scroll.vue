@@ -26,6 +26,7 @@ export default {
 	mounted() {
 		this.bs = new BScroll(this.$refs.wrapper, {
 			scrollY: true,
+			startY:0,
 			scrollX: false,
 			probeType: this.probeType,
 			click: true,
