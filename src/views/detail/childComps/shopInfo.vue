@@ -7,11 +7,13 @@
 		<div class="shopinfo_main">
 			<div class="shopinfo_main_l">
 				<div class="shopinfo_main_l_info">
-					<div class="shopinfo_main_l_info_tit">{{ shop.fans }}</div>
+					<div class="shopinfo_main_l_info_tit">
+						{{ max_num(this.shop.fans) }}
+					</div>
 					<div>总销量</div>
 				</div>
 				<div class="shopinfo_main_l_info">
-					<div class="shopinfo_main_l_info_tit">{{ shop.sells }}</div>
+					<div class="shopinfo_main_l_info_tit">{{ max_num(shop.sells) }}</div>
 					<div>全部宝贝</div>
 				</div>
 			</div>
@@ -38,6 +40,16 @@ export default {
 			default() {
 				return {};
 			},
+		},
+	},
+	computed: {},
+	mounted() {},
+	methods: {
+		max_num(num) {
+			if (num < 10000) {
+				return num;
+			}
+			return (num / 10000).toFixed(1) + "万";
 		},
 	},
 };

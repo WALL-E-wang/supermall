@@ -29,3 +29,10 @@ export class Shop {
     this.goodscount = shopInfo.cGoods; //店铺描述
   }
 }
+export class GoodsParam {
+  constructor(info, rule) {
+    this.image = info.images ? info.images[0] : "";
+    this.info = info.set;
+    this.rule = rule.tables;
+  }
+}

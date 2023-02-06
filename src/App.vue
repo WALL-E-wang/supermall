@@ -1,11 +1,11 @@
 <template>
 	<div>
-			<router-view v-slot="{ Component }">
-        <keep-alive exclude="detail">
-          <component :is="Component" />
-        </keep-alive>
-      </router-view>
-		<main-tab-bar></main-tab-bar>
+		<router-view v-slot="{ Component }">
+			<keep-alive exclude="detail">
+				<component :is="Component" />
+			</keep-alive>
+		</router-view>
+		<main-tab-bar v-if="showNav"></main-tab-bar>
 	</div>
 </template>
 
@@ -16,6 +16,14 @@ export default {
 	name: "App",
 	components: {
 		MainTabBar,
+	},
+	data() {
+		return {
+			showNav: true,
+		};
+	},
+	mounted() {
+		console.log(this.$route.meta.hideTabBar);
 	},
 };
 </script>

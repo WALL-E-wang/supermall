@@ -29,6 +29,9 @@ const routes = [
   {
     path: "/detail:iid",
     component: Detail,
+    // meta: {
+    //   hideTabBar:true
+    // },
   },
 ];
 const router = createRouter({
