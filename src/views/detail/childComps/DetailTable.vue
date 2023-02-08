@@ -28,9 +28,13 @@ export default {
 			},
 		},
 	},
-	mounted() {
-		console.log(this.datailParams);
+	watch: {
+		datailParams(val, oldval) {
+			console.log(val.rule[0]);
+			console.log(Object.values(val.rule[1]));
+		},
 	},
+	mounted() {},
 };
 </script>
 <style scoped>
