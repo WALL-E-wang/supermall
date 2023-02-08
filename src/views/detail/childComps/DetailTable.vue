@@ -15,6 +15,9 @@
 				<td>{{ table.value }}</td>
 			</tr>
 		</table>
+		<div class="infoImg" v-if="datailParams.image.length !== 0">
+			<img :src="datailParams.image" alt="" />
+		</div>
 	</div>
 </template>
 <script>
@@ -28,12 +31,7 @@ export default {
 			},
 		},
 	},
-	watch: {
-		datailParams(val, oldval) {
-			console.log(val.rule[0]);
-			console.log(Object.values(val.rule[1]));
-		},
-	},
+	watch: {},
 	mounted() {},
 };
 </script>
@@ -54,5 +52,9 @@ export default {
 }
 .info_table tr td:nth-child(2) {
 	color: var(--color-text);
+}
+.infoImg img {
+	display: block;
+	max-width: 100%;
 }
 </style>

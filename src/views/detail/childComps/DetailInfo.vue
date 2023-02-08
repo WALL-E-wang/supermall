@@ -24,9 +24,9 @@ export default {
 	props: {
 		detailInfo: {
 			type: Object,
-		},
-		default() {
-			return {};
+			default() {
+				return {};
+			},
 		},
 	},
 };

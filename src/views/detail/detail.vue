@@ -1,11 +1,14 @@
 <template>
 	<div id="detall">
 		<DetailNavBar></DetailNavBar>
-		<DetailSwiper :topImages="topImages"></DetailSwiper>
-		<detailbaseinfo :goods="goods"></detailbaseinfo>
-		<shopInfo :shop="shop"></shopInfo>
-		<!-- <DetailInfo :detailInfo="detailInfo"></DetailInfo> -->
-		<DetailTable :datailParams="datailParams"></DetailTable>
+		<scroll ref="wrapperDetail" class="contentDetail">
+			<DetailSwiper :topImages="topImages"></DetailSwiper>
+			<detailbaseinfo :goods="goods"></detailbaseinfo>
+			<shopInfo :shop="shop"></shopInfo>
+			<!-- <DetailInfo :detailInfo="detailInfo"></DetailInfo> -->
+			<DetailTable :datailParams="datailParams"></DetailTable>
+			<DetailComment :detailComment="detailComment"></DetailComment>
+		</scroll>
 	</div>
 </template>
 <script>
@@ -15,7 +18,10 @@ import detailbaseinfo from "@/views/detail/childComps/detailbaseinfo.vue";
 import shopInfo from "@/views/detail/childComps/shopInfo.vue";
 import DetailInfo from "./childComps/DetailInfo.vue";
 import DetailTable from "./childComps/DetailTable.vue";
+import DetailComment from "@/views/detail/childComps/DetailComment.vue";
 import { getdetail, Goods, Shop, GoodsParam } from "@/network/detail";
+import scroll from "@/components/common/scroll/Scroll.vue";
+
 export default {
 	name: "detail",
 	data() {
@@ -26,6 +32,8 @@ export default {
 			shop: {},
 			detailInfo: {},
 			datailParams: {},
+			detailComment: {},
+			bs: {},
 		};
 	},
 	created() {
@@ -51,10 +59,26 @@ export default {
 				data.itemParams.info,
 				data.itemParams.rule
 			);
-			console.log(this.datailParams);
+			//获取评论
+			if (data.rate.cRate !== 0) {
+				this.detailComment = data.rate.list[0];
+				console.log(this.detailComment);
+			}
 		});
 	},
-	mounted() {},
+	mounted() {
+		this.initBscroll();
+	},
+	methods: {
+		initBscroll() {
+			this.bs = this.$refs.wrapperDetail.bs;
+			this.bs.on("pullingDown", () => {
+				this.bs.finishPullDown();
+				//这插件自带一个minScrollY=40，拉完了手动回到顶部
+				this.bs.scrollTo(0, 0, 300);
+			});
+		},
+	},
 	components: {
 		DetailNavBar,
 		DetailSwiper,
@@ -62,6 +86,8 @@ export default {
 		shopInfo,
 		DetailInfo,
 		DetailTable,
+		DetailComment,
+		scroll,
 	},
 };
 </script>
@@ -81,5 +107,10 @@ export default {
 	background: #fff;
 	top: 0;
 	z-index: 99;
+}
+.contentDetail {
+	position: relative;
+	height: calc(100vh - 0.98rem);
+	overflow: hidden;
 }
 </style>

@@ -22,9 +22,7 @@ export default {
 			showNav: true,
 		};
 	},
-	mounted() {
-		console.log(this.$route.meta.hideTabBar);
-	},
+	mounted() {},
 };
 </script>
 
