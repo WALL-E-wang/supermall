@@ -1,14 +1,17 @@
 <template>
 	<div id="detall">
-		<DetailNavBar></DetailNavBar>
+		<DetailNavBar @titleClick="titleClick"></DetailNavBar>
 		<scroll ref="wrapperDetail" class="contentDetail">
 			<DetailSwiper :topImages="topImages"></DetailSwiper>
 			<detailbaseinfo :goods="goods"></detailbaseinfo>
-			<shopInfo :shop="shop"></shopInfo>
-			<!-- <DetailInfo :detailInfo="detailInfo"></DetailInfo> -->
-			<DetailTable :datailParams="datailParams"></DetailTable>
-			<DetailComment :detailComment="detailComment"></DetailComment>
-			<GoodsList :goods="rerommends"></GoodsList>
+			<shopInfo ref="shop" :shop="shop"></shopInfo>
+			<DetailInfo :detailInfo="detailInfo"></DetailInfo>
+			<DetailTable ref="parame" :datailParams="datailParams"></DetailTable>
+			<DetailComment
+				ref="comment"
+				:detailComment="detailComment"
+			></DetailComment>
+			<GoodsList ref="rerommends" :goods="rerommends"></GoodsList>
 		</scroll>
 	</div>
 </template>
@@ -42,6 +45,7 @@ export default {
 			detailComment: {},
 			bs: {},
 			rerommends: [],
+			scrollListY: [],
 		};
 	},
 	created() {
@@ -72,6 +76,16 @@ export default {
 			if (data.rate.cRate !== 0) {
 				this.detailComment = data.rate.list[0];
 			}
+			this.$nextTick(() => {
+				this.scrollListY.push(this.$refs.shop.$el.offsetTop);
+				this.scrollListY.push(this.$refs.parame.$el.offsetTop);
+				this.scrollListY.push(this.$refs.comment.$el.offsetTop);
+				this.scrollListY.push(this.$refs.rerommends.$el.offsetTop);
+				console.log(
+					"🚀 ~ file: detail.vue:84 ~ this.$nextTick ~ this.scrollListY:",
+					this.scrollListY
+				);
+			});
 		});
 		//3获取推荐数据
 		getRecommend().then((res) => {
@@ -90,6 +104,10 @@ export default {
 				//这插件自带一个minScrollY=40，拉完了手动回到顶部
 				this.bs.scrollTo(0, 0, 300);
 			});
+		},
+		//顶部点击
+		titleClick(index) {
+			this.bs.scrollTo(0, -this.scrollListY[index], 1000);
 		},
 	},
 	components: {
