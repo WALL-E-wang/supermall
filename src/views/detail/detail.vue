@@ -8,6 +8,7 @@
 			<!-- <DetailInfo :detailInfo="detailInfo"></DetailInfo> -->
 			<DetailTable :datailParams="datailParams"></DetailTable>
 			<DetailComment :detailComment="detailComment"></DetailComment>
+			<GoodsList :goods="rerommends"></GoodsList>
 		</scroll>
 	</div>
 </template>
@@ -19,9 +20,15 @@ import shopInfo from "@/views/detail/childComps/shopInfo.vue";
 import DetailInfo from "./childComps/DetailInfo.vue";
 import DetailTable from "./childComps/DetailTable.vue";
 import DetailComment from "@/views/detail/childComps/DetailComment.vue";
-import { getdetail, Goods, Shop, GoodsParam } from "@/network/detail";
+import GoodsList from "@/components/content/goos/GoodsList.vue";
+import {
+	getdetail,
+	Goods,
+	Shop,
+	GoodsParam,
+	getRecommend,
+} from "@/network/detail";
 import scroll from "@/components/common/scroll/Scroll.vue";
-
 export default {
 	name: "detail",
 	data() {
@@ -34,13 +41,15 @@ export default {
 			datailParams: {},
 			detailComment: {},
 			bs: {},
+			rerommends: [],
 		};
 	},
 	created() {
+		//1获取iid
 		this.iid = this.$route.params.iid;
+		//2获取详情数据
 		getdetail(this.iid).then((res) => {
 			//获取顶部图片的轮播数据
-			console.log(res);
 			const data = res.result;
 			this.topImages = res.result.itemInfo.topImages;
 			// console.log(this.topImages);
@@ -62,8 +71,12 @@ export default {
 			//获取评论
 			if (data.rate.cRate !== 0) {
 				this.detailComment = data.rate.list[0];
-				console.log(this.detailComment);
 			}
+		});
+		//3获取推荐数据
+		getRecommend().then((res) => {
+			this.rerommends = res.data.list;
+			console.log(res);
 		});
 	},
 	mounted() {
@@ -88,6 +101,7 @@ export default {
 		DetailTable,
 		DetailComment,
 		scroll,
+		GoodsList,
 	},
 };
 </script>
