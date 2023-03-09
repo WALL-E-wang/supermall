@@ -5,7 +5,7 @@
       <DetailSwiper :topImages="topImages"></DetailSwiper>
       <detailbaseinfo :goods="goods"></detailbaseinfo>
       <shopInfo :shop="shop"></shopInfo>
-      <!-- <DetailInfo :detailInfo="detailInfo"></DetailInfo> -->
+      <DetailInfo :detailInfo="detailInfo"></DetailInfo>
       <DetailTable ref="params" :datailParams="datailParams"></DetailTable>
       <DetailComment
         ref="recommend"
@@ -68,16 +68,19 @@ export default {
         console.log(this.detailComment);
       }
       this.$nextTick(() => {
-        this.themeTopYs.push(0);
-        this.themeTopYs.push(this.$refs.params.$el.offsetTop);
-        this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
-        console.log(this.themeTopYs);
+        setTimeout(() => {
+          this.themeTopYs.push(0);
+          this.themeTopYs.push(this.$refs.params.$el.offsetTop);
+          this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+          console.log(this.themeTopYs);
+        }, 1000);
       });
     });
   },
   mounted() {
     this.initBscroll();
   },
+
   methods: {
     initBscroll() {
       this.bs = this.$refs.wrapperDetail.bs;
@@ -91,10 +94,16 @@ export default {
       this.bs.scrollTo(0, -this.themeTopYs[index], 600);
     },
     scroll_jianting(position) {
-      console.log(
-        "🚀 ~ file: detail.vue:94 ~ scroll_jianting ~ position:",
-        position
-      );
+      const positionY = -position.y;
+      for (let i in this.themeTopYs) {
+        if (
+          positionY > this.themeTopYs[parseInt(i)] &&
+          positionY < this.themeTopYs[parseInt(i) + 1]
+        ) {
+          console.log(i);
+        } else {
+        }
+      }
     },
   },
   components: {
