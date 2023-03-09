@@ -1,16 +1,17 @@
 <template>
   <div id="detall">
-    <DetailNavBar @titleClick="titClick"></DetailNavBar>
-    <scroll @scroll="scroll_jianting" ref="wrapperDetail" class="contentDetail">
+    <DetailNavBar @titleClick="titleClick"></DetailNavBar>
+    <scroll ref="wrapperDetail" class="contentDetail">
       <DetailSwiper :topImages="topImages"></DetailSwiper>
       <detailbaseinfo :goods="goods"></detailbaseinfo>
-      <shopInfo :shop="shop"></shopInfo>
+      <shopInfo ref="shop" :shop="shop"></shopInfo>
       <DetailInfo :detailInfo="detailInfo"></DetailInfo>
-      <DetailTable ref="params" :datailParams="datailParams"></DetailTable>
+      <DetailTable ref="parame" :datailParams="datailParams"></DetailTable>
       <DetailComment
-        ref="recommend"
+        ref="comment"
         :detailComment="detailComment"
       ></DetailComment>
+      <GoodsList ref="rerommends" :goods="rerommends"></GoodsList>
     </scroll>
   </div>
 </template>
@@ -22,9 +23,15 @@ import shopInfo from "@/views/detail/childComps/shopInfo.vue";
 import DetailInfo from "./childComps/DetailInfo.vue";
 import DetailTable from "./childComps/DetailTable.vue";
 import DetailComment from "@/views/detail/childComps/DetailComment.vue";
-import { getdetail, Goods, Shop, GoodsParam } from "@/network/detail";
+import GoodsList from "@/components/content/goos/GoodsList.vue";
+import {
+  getdetail,
+  Goods,
+  Shop,
+  GoodsParam,
+  getRecommend,
+} from "@/network/detail";
 import scroll from "@/components/common/scroll/Scroll.vue";
-
 export default {
   name: "detail",
   data() {
@@ -37,11 +44,14 @@ export default {
       datailParams: {},
       detailComment: {},
       bs: {},
-      themeTopYs: [],
+      rerommends: [],
+      scrollListY: [],
     };
   },
   created() {
+    //1获取iid
     this.iid = this.$route.params.iid;
+    //2获取详情数据
     getdetail(this.iid).then((res) => {
       //获取顶部图片的轮播数据
       const data = res.result;
@@ -65,22 +75,27 @@ export default {
       //获取评论
       if (data.rate.cRate !== 0) {
         this.detailComment = data.rate.list[0];
-        console.log(this.detailComment);
       }
       this.$nextTick(() => {
-        setTimeout(() => {
-          this.themeTopYs.push(0);
-          this.themeTopYs.push(this.$refs.params.$el.offsetTop);
-          this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
-          console.log(this.themeTopYs);
-        }, 1000);
+        this.scrollListY.push(this.$refs.shop.$el.offsetTop);
+        this.scrollListY.push(this.$refs.parame.$el.offsetTop);
+        this.scrollListY.push(this.$refs.comment.$el.offsetTop);
+        this.scrollListY.push(this.$refs.rerommends.$el.offsetTop);
+        console.log(
+          "🚀 ~ file: detail.vue:84 ~ this.$nextTick ~ this.scrollListY:",
+          this.scrollListY
+        );
       });
+    });
+    //3获取推荐数据
+    getRecommend().then((res) => {
+      this.rerommends = res.data.list;
+      console.log(res);
     });
   },
   mounted() {
     this.initBscroll();
   },
-
   methods: {
     initBscroll() {
       this.bs = this.$refs.wrapperDetail.bs;
@@ -90,20 +105,9 @@ export default {
         this.bs.scrollTo(0, 0, 300);
       });
     },
-    titClick(index) {
-      this.bs.scrollTo(0, -this.themeTopYs[index], 600);
-    },
-    scroll_jianting(position) {
-      const positionY = -position.y;
-      for (let i in this.themeTopYs) {
-        if (
-          positionY > this.themeTopYs[parseInt(i)] &&
-          positionY < this.themeTopYs[parseInt(i) + 1]
-        ) {
-          console.log(i);
-        } else {
-        }
-      }
+    //顶部点击
+    titleClick(index) {
+      this.bs.scrollTo(0, -this.scrollListY[index], 1000);
     },
   },
   components: {
@@ -115,6 +119,7 @@ export default {
     DetailTable,
     DetailComment,
     scroll,
+    GoodsList,
   },
 };
 </script>
