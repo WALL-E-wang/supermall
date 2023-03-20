@@ -51,7 +51,7 @@ export default {
       },
     });
     this.bs.on("scroll", (position) => {
-      this.$emit("scroll", position);
+      this.$emit("scroll", position.y);
     });
     // this.bs.on("pullingDown", () => {
     // 	console.log("上拉执行刷新");
